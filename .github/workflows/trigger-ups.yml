@@ -9,15 +9,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - uses: actions/checkout@v4
+
+      - name: Read handoff.json
+        id: handoff
+        run: |
+          XSHIP=$(jq -r '.xship' handoff.json)
+          echo "xship=$XSHIP" >> $GITHUB_OUTPUT
+
       - name: Trigger UPS Repository
         uses: peter-evans/repository-dispatch@v3
-
         with:
           token: ${{ secrets.UPS_PAT }}
           repository: yong-shen-intel/demoups
           event-type: lava-trigger
           client-payload: |
             {
-              "xship":"ABC123",
+              "xship":"${{ steps.handoff.outputs.xship }}",
               "source_pr":"${{ github.event.pull_request.number }}"
             }
