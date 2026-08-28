@@ -1,0 +1,23 @@
+name: Trigger UPS
+
+on:
+  pull_request:
+    types: [opened]
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger UPS Repository
+        uses: peter-evans/repository-dispatch@v3
+
+        with:
+          token: ${{ secrets.UPS_PAT }}
+          repository: yong-shen-intel/demoups
+          event-type: lava-trigger
+          client-payload: |
+            {
+              "xship":"ABC123",
+              "source_pr":"${{ github.event.pull_request.number }}"
+            }
